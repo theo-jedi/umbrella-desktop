@@ -20,7 +20,7 @@ class UmbrellaDesktop(App):
 
     api_stations = "stations"
     api_statuses = "auth"
-    api_code = "code"
+    api_code = "securityWord"
     api_active = "active"
     api_status = "status"
     api_status_status = "status"
@@ -57,7 +57,7 @@ class UmbrellaDesktop(App):
         self.station2_umbrella = "0"
         self.station1_status_label = Label(text="Ready")
         self.station2_status_label = Label(text="Ready")
-        self.station1_qr_image = Image(source=self.station1_id + ".png")
+        self.station1_qr_image = Image(source=self.station1_id + ".png", size=(500, 500))
         self.station2_qr_image = Image(source=self.station2_id + ".png")
 
         self.setup_auth()
@@ -95,13 +95,13 @@ class UmbrellaDesktop(App):
         self.station2_qr_image.reload()
 
     def on_station1_qr_code_changed(self, doc_snapshot):
-        code = doc_snapshot[0].get(self.api_code)
+        code = doc_snapshot[0].get(self.api_code) + "-" + self.station1_id
         if self.station1_code != code:
             self.station1_code = code
             self.update_station1_qr_code(code)
 
     def on_station2_qr_code_changed(self, doc_snapshot):
-        code = doc_snapshot[0].get(self.api_code)
+        code = doc_snapshot[0].get(self.api_code) + "-" + self.station2_id
         if self.station2_code != code:
             self.station2_code = code
             self.update_station2_qr_code(code)
