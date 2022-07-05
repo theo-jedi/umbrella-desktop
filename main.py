@@ -98,13 +98,15 @@ class UmbrellaDesktop(App):
         code = doc_snapshot[0].get(self.api_code) + "-" + self.station1_id
         if self.station1_code != code:
             self.station1_code = code
-            self.update_station1_qr_code(code)
+            if self.station1_active == "active":
+                self.update_station1_qr_code(code)
 
     def on_station2_qr_code_changed(self, doc_snapshot):
         code = doc_snapshot[0].get(self.api_code) + "-" + self.station2_id
         if self.station2_code != code:
             self.station2_code = code
-            self.update_station2_qr_code(code)
+            if self.station2_active == "active":
+                self.update_station2_qr_code(code)
 
     def get_umbrella(self, doc_status):
         return str(doc_status.get(self.api_status_umbrella)) if self.api_status_umbrella in doc_status else ""
@@ -156,31 +158,33 @@ class UmbrellaDesktop(App):
 
     def on_station1_active_changed(self, doc_snapshot):
         status = self.get_active_status(doc_snapshot)
-        if self.station1_active != status:
-            self.station1_active = status
-            if status == "active":
-                self.update_station1_status(self.station1_status, self.station1_umbrella)
-            elif status == "inactive":
-                self.update_station1_status(status, "")
+        self.station1_active = status
+        if status == "active":
+            self.update_station1_status(self.station1_status, self.station1_umbrella)
+            self.update_station1_qr_code(self.station1_code)
+        elif status == "inactive":
+            self.update_station1_status(status, "")
+            self.update_station1_qr_code("inactive")
 
     def on_station2_active_changed(self, doc_snapshot):
         status = self.get_active_status(doc_snapshot)
-        if self.station2_active != status:
-            self.station2_active = status
-            if status == "active":
-                self.update_station2_status(self.station2_status, self.station2_umbrella)
-            elif status == "inactive":
-                self.update_station2_status(status, "")
+        self.station2_active = status
+        if status == "active":
+            self.update_station2_status(self.station2_status, self.station2_umbrella)
+            self.update_station2_qr_code(self.station2_code)
+        elif status == "inactive":
+            self.update_station2_status(status, "")
+            self.update_station2_qr_code("inactive")
 
     # noinspection PyUnusedLocal
     def on_station1_changed(self, doc_snapshot, changes, read_time):
-        self.on_station1_qr_code_changed(doc_snapshot)
         self.on_station1_active_changed(doc_snapshot)
+        self.on_station1_qr_code_changed(doc_snapshot)
 
     # noinspection PyUnusedLocal
     def on_station2_changed(self, doc_snapshot, changes, read_time):
-        self.on_station2_qr_code_changed(doc_snapshot)
         self.on_station2_active_changed(doc_snapshot)
+        self.on_station2_qr_code_changed(doc_snapshot)
 
     # noinspection PyMethodMayBeStatic
     def setup_auth(self):
